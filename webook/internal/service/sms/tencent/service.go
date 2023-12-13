@@ -39,6 +39,7 @@ func (s *Service) Send(ctx context.Context, tplId string, args []string, numbers
 			return fmt.Errorf("发送短信失败 %s, %s", *status.Code, *status.Message)
 		}
 	}
+	return nil
 
 }
 

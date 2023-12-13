@@ -1,20 +1,29 @@
 package repository
 
 import (
-	"context"
 	"GoCamp/webook/internal/repository/cache"
+	"context"
+)
+
+var (
+	ErrCodeSendToMany        = cache.ErrCodeSendToMany
+	ErrCodeVerifyToManyTimes = cache.ErrCodeVerifyToManyTimes
 )
 
 type CodeRepository struct {
 	cache *cache.CodeCache
 }
 
-func NewCodeRepository() *CodeRepository {
+func NewCodeRepository(c *cache.CodeCache) *CodeRepository {
 	return &CodeRepository{
-		cache:
+		cache: c,
 	}
 }
 
 func (repo *CodeRepository) Store(ctx context.Context, biz, phone, code string) error {
 	return repo.cache.Set(ctx, biz, phone, code)
+}
+
+func (repo *CodeRepository) Verify(ctx context.Context, biz, phone, inputCode string) (bool, error) {
+	return repo.cache.Verify(ctx, biz, phone, inputCode)
 }
