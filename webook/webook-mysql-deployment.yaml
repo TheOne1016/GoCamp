@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webook-mysql
+spec:
+# 筛选带 app=mysql 的 pod
+  selector:
+    matchLabels:
+      app: webook-mysql
+  #定义 pod 的模板
+  template:
+    metadata:
+      labels:
+        #归属于 webook 的 mysql
+        app: webook-mysql
+    spec:
+      containers:
+        - name: mysql-8
+          env:
+            #通过环境变量设置 root 的密码
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+          image: mysql:8.0
+          ports:
+#            默认情况下，部署的 mysql 是监听 3306 端口的
+            - containerPort: 3306
+              name: mysql
+#              mysql 的数据怎么存储
+          volumeMounts:
+#           这两个配置的意思是，mysql 的数据存在 mysql-storage 这个持久化卷的 /mysql 目录下
+            - mountPath: /mysql
+              name: mysql-storage
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+#            使用 webook-mysql-pv-claim，这个 claim 里面详细描述了 mysql 所需要的卷的特性
+            claimName: webook-mysql-pv-claim
+

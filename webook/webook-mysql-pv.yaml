@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: webook-mysql-pv-claim
+#  labels 都是随便打的
+  labels:
+    type: local
+spec:
+#  这边 storageClassName 也设置为 manual 从而和 pvc 绑定在一起
+  storageClassName: manual
+#  各种容量
+  capacity:
+#    存储容量
+    storage: 1Gi
+#   本 PV 支持的访问方式
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+#    本 PV 的根目录
+    path: "/mnt/data"

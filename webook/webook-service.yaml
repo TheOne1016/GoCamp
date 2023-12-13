@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+#  代表这是我们的 webook 本体
+  name: webook
+#  规格说明，也即是详细说明这个服务是一个怎样的服务
+spec:
+#  你如果想要外部直接访问，就用这个
+#  type: LoadBalancer
+#  如果你想通过 Nginx 来访问，就用这个
+  type: NodePort
+  selector:
+    app:  webook
+  ports:
+    - port: 80
+      nodePort: 30080
+      targetPort: 8081
+
+

@@ -1,0 +1,26 @@
+# 如何解释这一份配置，或者说怎么处理这一份配置
+apiVersion: apps/v1
+# 声明我这里配置的是 Deployment
+kind: Deployment
+metadata:
+#  也叫做 webook，但这是一个 Deployment
+  name: webook
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app:  webook
+  template:
+    metadata:
+      labels:
+        #        因为上面 selector 里面我们找的是这个 label
+        app: webook
+    #        pod 的具体规格说明
+    spec:
+      #      pod 里面运行的 container
+      containers:
+        - name: webook
+          image: timezone/webook:v0.0.2
+          ports:
+            #           在我们的 main 函数里面我写死了 8080，所以这里也要写 8080
+            - containerPort: 8081
