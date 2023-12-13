@@ -35,7 +35,7 @@ func (svc *CodeService) Send(ctx context.Context, biz string, phone string) erro
 	err := svc.repo.Store(ctx, biz, phone, code)
 	if err != nil {
 		//有问题
-		return nil
+		return err
 	}
 
 	//发送出去

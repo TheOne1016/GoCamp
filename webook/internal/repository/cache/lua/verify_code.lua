@@ -12,7 +12,7 @@ if cnt <= 0 then
 elseif expectedCode == code then
         -- 输对了
         --用完了，不能再用了
-        redis.cal("set",cntKey, -1)
+        redis.call("set",cntKey, -1)
         return 0
 else
         -- 用户手一抖，输错了

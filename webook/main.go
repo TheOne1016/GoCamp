@@ -1,7 +1,6 @@
 package main
 
 import (
-	"GoCamp/webook/config"
 	"GoCamp/webook/internal/repository"
 	"GoCamp/webook/internal/repository/cache"
 	"GoCamp/webook/internal/repository/dao"
@@ -39,7 +38,8 @@ func initWebServer() *gin.Engine {
 	server := gin.Default()
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr: config.Config.Redis.Addr,
+		//Addr: config.Config.Redis.Addr,
+		Addr: "localhost:6379",
 	})
 	server.Use(ratelimit.NewBuilder(redisClient, time.Second, 100).Build())
 
@@ -97,13 +97,15 @@ func initUser(db *gorm.DB, rdb redis.Cmdable) *web.UserHandler {
 
 func initRedis() redis.Cmdable {
 	redisClient := redis.NewClient(&redis.Options{
-		Addr: config.Config.Redis.Addr,
+		//Addr: config.Config.Redis.Addr,
+		Addr: "localhost:6379",
 	})
 	return redisClient
 }
 
 func initDB() *gorm.DB {
-	db, err := gorm.Open(mysql.Open(config.Config.DB.DSN))
+	//db, err := gorm.Open(mysql.Open(config.Config.DB.DSN))
+	db, err := gorm.Open(mysql.Open("root:root@tcp(localhost:13316)/webook"))
 	if err != nil {
 		//一旦初始化过程出错，应用就不要启动了
 		panic(err)
