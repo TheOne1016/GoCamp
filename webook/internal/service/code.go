@@ -2,7 +2,7 @@ package service
 
 import (
 	"GoCamp/webook/internal/repository"
-	sms "GoCamp/webook/internal/service/sms/memory"
+	"GoCamp/webook/internal/service/sms"
 	"context"
 	"fmt"
 	"math/rand"

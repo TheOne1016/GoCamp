@@ -16,6 +16,11 @@ import (
 
 const biz = "login"
 
+// ensure UserHandler implement handler interface
+// var _ handler = &UserHandler{}
+// or
+var _ handler = (*UserHandler)(nil)
+
 // 在UserHandler上定义跟用户有关的路由
 type UserHandler struct {
 	svc                                *service.UserService
