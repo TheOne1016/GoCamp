@@ -12,15 +12,23 @@ import (
 var ErrUserDuplicate = repository.ErrUserDuplicate
 var ErrInvalidUserOrPassword = errors.New("账号/邮箱或密码不对")
 
-type UserService struct {
-	repo *repository.UserRepository
+type UserService interface {
+	SignUp(ctx context.Context, u domain.User) error
+	Login(ctx context.Context, email, password string) (domain.User, error)
+	Edit(ctx context.Context, Id int64, NickName, Birthday, BirefInfo string) error
+	FindOrCreate(ctx context.Context, phone string) (domain.User, error)
+	GetProfile(ctx context.Context, Id int64) (domain.User, error)
 }
 
-func NewUserService(repo *repository.UserRepository) *UserService {
-	return &UserService{repo: repo}
+type UserServiceOne struct {
+	repo repository.UserRepository
 }
 
-func (svc *UserService) SignUp(ctx context.Context, u domain.User) error {
+func NewUserService(repo repository.UserRepository) UserService {
+	return &UserServiceOne{repo: repo}
+}
+
+func (svc *UserServiceOne) SignUp(ctx context.Context, u domain.User) error {
 	//你要考虑加密放在哪里的问题了
 	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -31,7 +39,7 @@ func (svc *UserService) SignUp(ctx context.Context, u domain.User) error {
 	return svc.repo.Create(ctx, u)
 }
 
-func (svc *UserService) Login(ctx context.Context, email, password string) (domain.User, error) {
+func (svc *UserServiceOne) Login(ctx context.Context, email, password string) (domain.User, error) {
 	//先找用户
 	u, err := svc.repo.FindByEmail(ctx, email)
 	if err == repository.ErrUserNotFound {
@@ -48,7 +56,7 @@ func (svc *UserService) Login(ctx context.Context, email, password string) (doma
 	return u, nil
 }
 
-func (svc *UserService) Edit(ctx context.Context, Id int64, NickName, Birthday, BirefInfo string) error {
+func (svc *UserServiceOne) Edit(ctx context.Context, Id int64, NickName, Birthday, BirefInfo string) error {
 	u, err := svc.repo.FindById(ctx, Id)
 	if err == repository.ErrUserNotFound {
 		return ErrInvalidUserOrPassword
@@ -63,7 +71,7 @@ func (svc *UserService) Edit(ctx context.Context, Id int64, NickName, Birthday, 
 
 }
 
-func (svc *UserService) FindOrCreate(ctx context.Context, phone string) (domain.User, error) {
+func (svc *UserServiceOne) FindOrCreate(ctx context.Context, phone string) (domain.User, error) {
 	//这个叫做快路径
 	u, err := svc.repo.FindByPhone(ctx, phone)
 	//要判断，有没有这个用户
@@ -86,6 +94,6 @@ func (svc *UserService) FindOrCreate(ctx context.Context, phone string) (domain.
 	return svc.repo.FindByPhone(ctx, phone)
 }
 
-func (svc *UserService) GetProfile(ctx context.Context, Id int64) (domain.User, error) {
+func (svc *UserServiceOne) GetProfile(ctx context.Context, Id int64) (domain.User, error) {
 	return svc.repo.FindById(ctx, Id)
 }

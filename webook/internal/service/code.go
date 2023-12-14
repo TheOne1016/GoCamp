@@ -15,20 +15,25 @@ var (
 	ErrCodeVerifyToManyTimes = repository.ErrCodeVerifyToManyTimes
 )
 
-type CodeService struct {
-	repo   *repository.CodeRepository
+type CodeService interface {
+	Send(ctx context.Context, biz string, phone string) error
+	Verify(ctx context.Context, biz string, phone string, inputCode string) (bool, error)
+}
+
+type CodeServiceOne struct {
+	repo   repository.CodeRepository
 	smsSvc sms.Service
 }
 
-func NewCodeService(repo *repository.CodeRepository, smsSvc sms.Service) *CodeService {
-	return &CodeService{
+func NewCodeService(repo repository.CodeRepository, smsSvc sms.Service) CodeService {
+	return &CodeServiceOne{
 		repo:   repo,
 		smsSvc: smsSvc,
 	}
 }
 
 // Send发送验证码，我需要什么参数                   //区别业务场景
-func (svc *CodeService) Send(ctx context.Context, biz string, phone string) error {
+func (svc *CodeServiceOne) Send(ctx context.Context, biz string, phone string) error {
 	//生成一个验证码
 	code := svc.generateaCode()
 	//塞进去Redis
@@ -48,11 +53,11 @@ func (svc *CodeService) Send(ctx context.Context, biz string, phone string) erro
 	return nil
 }
 
-func (svc *CodeService) Verify(ctx context.Context, biz string, phone string, inputCode string) (bool, error) {
+func (svc *CodeServiceOne) Verify(ctx context.Context, biz string, phone string, inputCode string) (bool, error) {
 	return svc.repo.Verify(ctx, biz, phone, inputCode)
 }
 
-func (svc *CodeService) generateaCode() string {
+func (svc *CodeServiceOne) generateaCode() string {
 	//六位数， num在 0，999999之间，包含0和999999
 	num := rand.Intn(1000000)
 	//不够六位的，加上前导0
