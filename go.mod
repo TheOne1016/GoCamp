@@ -11,12 +11,18 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.1.0
 	github.com/google/wire v0.5.0
 	github.com/redis/go-redis/v9 v9.3.0
+	github.com/stretchr/testify v1.8.3
+	go.uber.org/mock v0.3.0
 	golang.org/x/crypto v0.14.0
 	gorm.io/driver/mysql v1.5.2
 	gorm.io/gorm v1.25.5
 )
 
-require github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.813 // indirect
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.813 // indirect
+)
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect
