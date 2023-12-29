@@ -20,8 +20,6 @@ type UserRepository interface {
 	FindByEmail(ctx context.Context, email string) (domain.User, error)
 	FindByPhone(ctx context.Context, phone string) (domain.User, error)
 	FindById(ctx context.Context, Id int64) (domain.User, error)
-	domainToEntity(u domain.User) dao.User
-	entityToDomain(u dao.User) domain.User
 }
 
 type CachedUserRepository struct {
