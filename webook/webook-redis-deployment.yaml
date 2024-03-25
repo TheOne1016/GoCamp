@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webook-redis
+spec:
+  selector:
+    matchLabels:
+      app: webook-redis
+  template:
+    metadata:
+      labels:
+        app: webook-redis
+    spec:
+      containers:
+        - name: webook-redis
+          image: redis:latest
+          ports:
+#           Redis 都是监听 6379 的
+            - containerPort: 6379
+
