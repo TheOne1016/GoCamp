@@ -36,6 +36,28 @@ func main() {
 
 }
 
+func InitWebServer() *gin.Engine {
+	cmdable := ioc.InitRedis()
+	loggerV1 := ioc.InitLogger()
+	handler := jwt.NewRedisJWTHandler(cmdable)
+	v := ioc.InitMiddlewares(cmdable, loggerV1, handler)
+	db := ioc.InitDB(loggerV1)
+	userDao := dao.NewUserDAO(db)
+	userCache := cache.NewUserCache(cmdable)
+	userRepository := repository.NewUserRepository(userDao, userCache)
+	userService := service.NewUserService(userRepository, loggerV1)
+	codeCache := cache.NewCodeCache(cmdable)
+	codeRepository := repository.NewCodeRepository(codeCache)
+	smsService := ioc.InitSMSService()
+	codeService := service.NewCodeService(codeRepository, smsService)
+	userHandler := web.NewUserHandler(userService, codeService, handler)
+	wechatService := ioc.InitWechatService(loggerV1)
+	wechatHandlerConfig := ioc.NewWechatHandlerConfig()
+	oAuth2WechatHandler := web.NewOAuth2WechatHandler(wechatService, userService, handler, wechatHandlerConfig)
+	engine := ioc.InitWebServer(v, userHandler, oAuth2WechatHandler)
+	return engine
+}
+
 func initLogger() {
 	logger, err := zap.NewDevelopment()
 	if err != nil {
@@ -94,26 +116,4 @@ func InitViper() {
 	// otherViper.SetConfigType("json")
 	// otherViper.AddConfigPath("./config")
 
-}
-
-func InitWebServer() *gin.Engine {
-	cmdable := ioc.InitRedis()
-	loggerV1 := ioc.InitLogger()
-	handler := jwt.NewRedisJWTHandler(cmdable)
-	v := ioc.InitMiddlewares(cmdable, loggerV1, handler)
-	db := ioc.InitDB()
-	userDao := dao.NewUserDAO(db)
-	userCache := cache.NewUserCache(cmdable)
-	userRepository := repository.NewUserRepository(userDao, userCache)
-	userService := service.NewUserService(userRepository, loggerV1)
-	codeCache := cache.NewCodeCache(cmdable)
-	codeRepository := repository.NewCodeRepository(codeCache)
-	smsService := ioc.InitSMSService()
-	codeService := service.NewCodeService(codeRepository, smsService)
-	userHandler := web.NewUserHandler(userService, codeService, handler)
-	wechatService := ioc.InitWechatService(loggerV1)
-	wechatHandlerConfig := ioc.NewWechatHandlerConfig()
-	oAuth2WechatHandler := web.NewOAuth2WechatHandler(wechatService, userService, handler, wechatHandlerConfig)
-	engine := ioc.InitWebServer(v, userHandler, oAuth2WechatHandler)
-	return engine
 }

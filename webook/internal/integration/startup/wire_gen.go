@@ -4,7 +4,7 @@
 //go:build !wireinject
 // +build !wireinject
 
-package main
+package startup
 
 import (
 	"GoCamp/webook/internal/repository"
@@ -23,7 +23,7 @@ import (
 
 // Injectors from wire.go:
 
-func InitWebServer2() *gin.Engine {
+func InitWebServer() *gin.Engine {
 	cmdable := ioc.InitRedis()
 	loggerV1 := ioc.InitLogger()
 	handler := jwt.NewRedisJWTHandler(cmdable)

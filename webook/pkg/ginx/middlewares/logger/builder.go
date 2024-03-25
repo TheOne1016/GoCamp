@@ -9,6 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//MiddlewareBuilder 注意点：
+//1. 小心日志内容过多。URL 可能很长，请求体、响应体都可能很大，你要考虑是不是完全输出到日志里面
+//2. 考虑 1 的问题，已经用户可能换用不同的日志框架，所以要有足够的灵活性
+//3. 考虑动态开关，结合监听配置文件，要小心并发安全
+
 type MiddlewareBuilder struct {
 	allowReqBody  bool
 	allowRespBody bool
